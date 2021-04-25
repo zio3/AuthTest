@@ -3,6 +3,8 @@
 @using System.Text
 @using System.Text.Json
 @using System.Web
+@using System.Net.Http
+@inject HttpClient Http
 
 <h1>Counter</h1>
 <a href="/.auth/login/aad">AAD Login</a>
@@ -11,52 +13,46 @@
 <a href="/.auth/login/google">google Login</a>
 <a href="/.auth/login/twitter">twitter Login</a>
 <p>Current count: @currentCount</p>
-
+<p>@AppsAuth.principal.UserDetails</p>
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-<label>@StaticWebAppsAuth.Parse(new HttpRequestMessage()).Identity.IsAuthenticated</label>
+
 
 @code {
     private int currentCount = 0;
+    public StaticWebAppsAuth AppsAuth;
+    protected override void OnInitialized()
+    {
+        AppsAuth = new StaticWebAppsAuth();
+        var res = AppsAuth.Get();
+        res.Wait();
+    }
 
     private void IncrementCount()
     {
         currentCount++;
     }
-    public static class StaticWebAppsAuth
-  {
-    private class ClientPrincipal
+    public  class StaticWebAppsAuth
     {
-        public string IdentityProvider { get; set; }
-        public string UserId { get; set; }
-        public string UserDetails { get; set; }
-        public IEnumerable<string> UserRoles { get; set; }
-    }
-
-    public static ClaimsPrincipal Parse(HttpRequestMessage req)
-    {
-        var principal = new ClientPrincipal();
-
-        if (req.Headers.TryGetValues("x-ms-client-principal", out var header))
+        public class ClientPrincipal
         {
-            var data = header.First();
-            var decoded = Convert.FromBase64String(data);
-            var json = Encoding.ASCII.GetString(decoded);
-            principal = JsonSerializer.Deserialize<ClientPrincipal>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            public string IdentityProvider { get; set; }
+            public string UserId { get; set; }
+            public string UserDetails { get; set; }
+            public IEnumerable<string> UserRoles { get; set; }
         }
+        public ClientPrincipal principal = new ClientPrincipal();
 
-        principal.UserRoles = principal.UserRoles?.Except(new string[] { "anonymous" }, StringComparer.CurrentCultureIgnoreCase);
-
-        if (!principal.UserRoles?.Any() ?? true)
+        public async Task<ClientPrincipal>  Get()
         {
-            return new ClaimsPrincipal();
-        }
+            var request = new HttpRequestMessage(HttpMethod.Get, @"/.auth/me");
+            ClientPrincipal res = null;
+            using (var client = new HttpClient())
+            {
+                res = await client.GetFromJsonAsync<ClientPrincipal>("/.auth/me");
+            }
+            principal = res;
+            return res;
+         }
 
-        var identity = new ClaimsIdentity(principal.IdentityProvider);
-        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, principal.UserId));
-        identity.AddClaim(new Claim(ClaimTypes.Name, principal.UserDetails));
-        identity.AddClaims(principal.UserRoles.Select(r => new Claim(ClaimTypes.Role, r)));
-
-        return new ClaimsPrincipal(identity);
     }
-  }
 }
