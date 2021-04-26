@@ -51,13 +51,17 @@
             try
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, @"/.auth/me");
-                
+
                 using (var client = new HttpClient())
                 {
                     res = await client.GetFromJsonAsync<ClientPrincipal>(@"/.auth/me");
                 }
                 principal = res;
-            }catch (Exception ex) {exc = $"{ex.Message} {ex.StackTrace}" }
+            }
+            catch (Exception ex)
+            {
+                exc = $"{ex.Message} {ex.StackTrace}";
+            }
             return res;
          }
 
