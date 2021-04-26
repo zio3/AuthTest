@@ -24,9 +24,15 @@
     public string exception = string.Empty;
     protected override void OnInitialized()
     {
-        AppsAuth = new StaticWebAppsAuth();
-        var res = AppsAuth.Get();
-        res.Wait();
+        try
+        {
+            AppsAuth = new StaticWebAppsAuth();
+            var res = AppsAuth.Get();
+            res.Wait();
+        } catch (Exception ex)
+        {
+            exception = $"{ex.Message} {ex.StackTrace}";
+        }
     }
 
     private void IncrementCount()
