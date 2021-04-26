@@ -14,12 +14,14 @@
 <a href="/.auth/login/twitter">twitter Login</a>
 <p>Current count: @currentCount</p>
 <p>@AppsAuth.principal.UserDetails</p>
+<p>@AppsAuth.exc</p>
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
 
 @code {
     private int currentCount = 0;
     public StaticWebAppsAuth AppsAuth;
+    public string exception = string.Empty;
     protected override void OnInitialized()
     {
         AppsAuth = new StaticWebAppsAuth();
@@ -41,16 +43,21 @@
             public IEnumerable<string> UserRoles { get; set; }
         }
         public ClientPrincipal principal = new ClientPrincipal();
+        public string exc = string.Empty;
 
         public async Task<ClientPrincipal>  Get()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, @"/.auth/me");
             ClientPrincipal res = null;
-            using (var client = new HttpClient())
+            try
             {
-                res = await client.GetFromJsonAsync<ClientPrincipal>(@"/.auth/me");
-            }
-            principal = res;
+                var request = new HttpRequestMessage(HttpMethod.Get, @"/.auth/me");
+                
+                using (var client = new HttpClient())
+                {
+                    res = await client.GetFromJsonAsync<ClientPrincipal>(@"/.auth/me");
+                }
+                principal = res;
+            }catch (Exception ex) {exc = $"{ex.Message} {ex.StackTrace}" }
             return res;
          }
 
