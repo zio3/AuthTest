@@ -58,10 +58,12 @@
             try
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, @"/.auth/me");
+                
+
 
                 using (var client = new HttpClient())
                 {
-                    res = await client.GetStringAsync(@"/.auth/me");
+                    res = await client.GetStringAsync(@"https://ashy-bay-0db838900.azurestaticapps.net/.auth/me");
                 }
                 //principal = res;
                 text = res;
