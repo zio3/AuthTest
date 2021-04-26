@@ -65,7 +65,7 @@
                     res = await client.GetStringAsync(@"https://ashy-bay-0db838900.azurestaticapps.net/.auth/me");
                 }
                 //principal = res;
-                text = HttpUtility.HtmlEncode(res);
+                text = res;
             }
             catch (Exception ex)
             {
