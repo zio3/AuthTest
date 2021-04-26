@@ -48,7 +48,7 @@
             ClientPrincipal res = null;
             using (var client = new HttpClient())
             {
-                res = await client.GetFromJsonAsync<ClientPrincipal>("/.auth/me");
+                res = await client.GetFromJsonAsync<ClientPrincipal>(@"/.auth/me");
             }
             principal = res;
             return res;
