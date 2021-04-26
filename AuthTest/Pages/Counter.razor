@@ -29,7 +29,7 @@
         {
             AppsAuth = new StaticWebAppsAuth();
             var res = AppsAuth.Get();
-            res.Wait();
+            //res.Wait();
         } catch (Exception ex)
         {
             exception = $"{ex.Message} {ex.StackTrace}";
