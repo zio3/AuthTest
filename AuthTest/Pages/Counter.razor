@@ -23,13 +23,12 @@
     private int currentCount = 0;
     public StaticWebAppsAuth AppsAuth;
     public string exception = string.Empty;
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         try
         {
             AppsAuth = new StaticWebAppsAuth();
-            var res = AppsAuth.Get();
-            //res.Wait();
+            var res = await AppsAuth.Get();
         } catch (Exception ex)
         {
             exception = $"{ex.Message} {ex.StackTrace}";
@@ -62,7 +61,7 @@
 
                 using (var client = new HttpClient())
                 {
-                    res = await client.GetStringAsync(@"https://ashy-bay-0db838900.azurestaticapps.net/.auth/me");
+                    res = await client.GetStringAsync(@"/.auth/me");
                 }
                 //principal = res;
                 text = res;
