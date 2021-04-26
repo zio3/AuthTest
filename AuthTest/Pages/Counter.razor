@@ -13,7 +13,7 @@
 <a href="/.auth/login/google">google Login</a>
 <a href="/.auth/login/twitter">twitter Login</a>
 <p>Current count: @currentCount</p>
-<p>@AppsAuth.principal.UserDetails</p>
+<p>@AppsAuth.text</p>
 <p>@AppsAuth.exc</p>
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
@@ -43,20 +43,22 @@
             public IEnumerable<string> UserRoles { get; set; }
         }
         public ClientPrincipal principal = new ClientPrincipal();
+        public string text = string.Empty;
         public string exc = string.Empty;
 
-        public async Task<ClientPrincipal>  Get()
+        public async Task<string>  Get()
         {
-            ClientPrincipal res = null;
+            string res = null;
             try
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, @"/.auth/me");
 
                 using (var client = new HttpClient())
                 {
-                    res = await client.GetFromJsonAsync<ClientPrincipal>(@"https://ashy-bay-0db838900.azurestaticapps.net/.auth/me");
+                    res = await client.GetStringAsync(@"https://ashy-bay-0db838900.azurestaticapps.net/.auth/me");
                 }
-                principal = res;
+                //principal = res;
+                text = res;
             }
             catch (Exception ex)
             {
