@@ -54,7 +54,7 @@
 
                 using (var client = new HttpClient())
                 {
-                    res = await client.GetFromJsonAsync<ClientPrincipal>(@"/.auth/me");
+                    res = await client.GetFromJsonAsync<ClientPrincipal>(@"https://ashy-bay-0db838900.azurestaticapps.net/.auth/me");
                 }
                 principal = res;
             }
